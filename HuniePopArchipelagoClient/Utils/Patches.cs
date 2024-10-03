@@ -35,7 +35,7 @@ namespace HuniePopArchipelagoClient.Utils
         [HarmonyPrefix]
         public static void puzzleautocomplete(PuzzleGame __instance)
         {
-            //__instance.SetResourceValue(PuzzleGameResourceType.AFFECTION, 9999, true);
+            __instance.SetResourceValue(PuzzleGameResourceType.AFFECTION, 9999, true);
         }
 
 
@@ -47,118 +47,9 @@ namespace HuniePopArchipelagoClient.Utils
         public static void archcheck(LocationManager __instance, ref LocationDefinition ____destinationLocation)
         {
             PlayerManager player = GameManager.System.Player;
-            ArchipelagoConsole.LogMessage("processing items");
-            for (int i = 0; i < ArchipelagoClient.alist.list.Count; i++)
-            {
-                ArchipelagoItem item = ArchipelagoClient.alist.list[i];
 
-                if (item.processed >= item.recieved)
-                {
-                    continue;
-                }
-
-                if (item.item.Item > 42069000 &&  item.item.Item < 42069013)
-                {
-                    //PANTIES ITEMS
-                    if (!player.IsInventoryFull())
-                    {
-                        ArchipelagoConsole.LogMessage("panties recieved");
-                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item-42069000+276), player.inventory, false, false);
-                        item.processed++;
-                    }
-                }
-                else if (item.item.Item > 42069012 && item.item.Item < 42069025)
-                {
-                    //GIRL UNLOCKS
-                    ArchipelagoConsole.LogMessage("girl unlocked");
-                    int girlid = (int)item.item.Item - 42069012;
-                    for (int j = 0; j < player.girls.Count; j++)
-                    {
-                        if(player.girls[j].GetGirlDefinition().id == girlid)
-                        {
-                            player.girls[j].metStatus = GirlMetStatus.MET;
-                            item.processed++;
-                            break;
-                        }
-                    }
-                }
-                else if (item.item.Item > 42069024 && item.item.Item < 42069097)
-                {
-                    //GIFT ITEMS
-                    ArchipelagoConsole.LogMessage("gift item recieved");
-                    if (!player.IsInventoryFull())
-                    {
-                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item - 42069024 + 49), player.inventory, false, false);
-                        item.processed++;
-                    }
-                }
-                else if (item.item.Item > 42069096 && item.item.Item < 42069169)
-                {
-                    //UNIQUE GIFT ITEMS
-                    ArchipelagoConsole.LogMessage("unique gift item recieved");
-                    if (!player.IsInventoryFull())
-                    {
-                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item - 42069096 + 193), player.inventory, false, false);
-                        item.processed++;
-                    }
-                }
-                else if (item.item.Item > 42069168 && item.item.Item < 42069217)
-                {
-                    //TOKEN ITEMS
-                    ArchipelagoConsole.LogMessage("token recieved");
-                    if (item.item.Item < 42069175)
-                    {
-                        //TALENT
-                        player.UpgradeTraitLevel(PlayerTraitType.TALENT);
-                        item.processed++;
-                    }
-                    else if(item.item.Item < 42069181)
-                    {
-                        //FLIRTATION
-                        player.UpgradeTraitLevel(PlayerTraitType.FLIRTATION);
-                        item.processed++;
-                    }
-                    else if (item.item.Item < 42069187)
-                    {
-                        //ROMANCE
-                        player.UpgradeTraitLevel(PlayerTraitType.ROMANCE);
-                        item.processed++;
-                    }
-                    else if (item.item.Item < 42069193)
-                    {
-                        //SEXUALITY
-                        player.UpgradeTraitLevel(PlayerTraitType.SEXUALITY);
-                        item.processed++;
-                    }
-                    else if (item.item.Item < 42069199)
-                    {
-                        //PASSION
-                        player.UpgradeTraitLevel(PlayerTraitType.PASSION);
-                        item.processed++;
-                    }
-                    else if (item.item.Item < 42069205)
-                    {
-                        //SENSITIVITY
-                        player.UpgradeTraitLevel(PlayerTraitType.SENSITIVITY);
-                        item.processed++;
-                    }
-                    else if (item.item.Item < 42069211)
-                    {
-                        //CHRISMA
-                        player.UpgradeTraitLevel(PlayerTraitType.CHARISMA);
-                        item.processed++;
-                    }
-                    else
-                    {
-                        //LUCK
-                        player.UpgradeTraitLevel(PlayerTraitType.LUCK);
-                        item.processed++;
-                    }
-
-                }
-
-
-            }
+            Util.processarch(true);
+            Util.processarch(false);
 
             if (player.alphaModeActive)
             {
@@ -336,6 +227,12 @@ namespace HuniePopArchipelagoClient.Utils
             __instance.currentGirl = -1;
             __instance.currentLocation = -1;
 
+            __instance.inventory = new InventoryItemSaveData[30];
+            for (int j = 0; j < __instance.inventory.Length; j++)
+            {
+                __instance.inventory[j] = new InventoryItemSaveData();
+            }
+
             //__instance.started = true;
             //__instance.tutorialComplete = true;
             //__instance.tutorialStep = 10;
@@ -425,6 +322,51 @@ namespace HuniePopArchipelagoClient.Utils
             return true;
         }
 
+        [HarmonyPatch(typeof(PlayerManager), "LogTossedItem")]
+        [HarmonyPrefix]
+        public static void toss(ItemDefinition item)
+        {
+            ArchipelagoConsole.LogMessage("ITEM TOSSED");
+            if(item.type == ItemType.PANTIES)
+            {
+                long flag = item.id - 276 + 42069000;
+                for (int l = 0;l < ArchipelagoClient.alist.list.Count; l++)
+                {
+                    if (ArchipelagoClient.alist.list[l].item.Item == flag)
+                    {
+                        ArchipelagoClient.alist.list[l].processed--; 
+                        ArchipelagoClient.alist.list[l].priority = false; 
+                        break; 
+                    }
+                }
+            }
+            else if (item.type == ItemType.UNIQUE_GIFT)
+            {
+                long flag = item.id - 192 + 42069096;
+                for (int l = 0; l < ArchipelagoClient.alist.list.Count; l++)
+                {
+                    if (ArchipelagoClient.alist.list[l].item.Item == flag)
+                    {
+                        ArchipelagoClient.alist.list[l].processed--;
+                        ArchipelagoClient.alist.list[l].priority = false;
+                        break;
+                    }
+                }
+            }
+            else if (item.type == ItemType.GIFT)
+            {
+                long flag = item.id - 48 + 42069024;
+                for (int l = 0; l < ArchipelagoClient.alist.list.Count; l++)
+                {
+                    if (ArchipelagoClient.alist.list[l].item.Item == flag)
+                    {
+                        ArchipelagoClient.alist.list[l].processed--;
+                        ArchipelagoClient.alist.list[l].priority = false;
+                        break;
+                    }
+                }
+            }
+        }
 
 
 
@@ -466,6 +408,135 @@ namespace HuniePopArchipelagoClient.Utils
         public static int girlgifttoloc(GirlPlayerData girl, ItemDefinition item)
         {
             return 0;
+        }
+
+        public static void processarch(bool priority)
+        {
+
+            PlayerManager player = GameManager.System.Player;
+            if (priority)
+            {
+                ArchipelagoConsole.LogMessage("processing priority items");
+            }
+            else
+            {
+                ArchipelagoConsole.LogMessage("processing non priority items");
+            }
+
+            for (int i = 0; i < ArchipelagoClient.alist.list.Count; i++)
+            {
+                ArchipelagoItem item = ArchipelagoClient.alist.list[i];
+
+                if (item.priority != priority) { continue; }
+
+                if (item.processed >= item.recieved)
+                {
+                    continue;
+                }
+
+                if (item.item.Item > 42069000 && item.item.Item < 42069013)
+                {
+                    //PANTIES ITEMS
+                    if (!player.IsInventoryFull())
+                    {
+                        ArchipelagoConsole.LogMessage("panties recieved");
+                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item - 42069001 + 277), player.inventory, false, false);
+                        item.processed++;
+                    }
+                }
+                else if (item.item.Item > 42069012 && item.item.Item < 42069025)
+                {
+                    //GIRL UNLOCKS
+                    ArchipelagoConsole.LogMessage("girl unlocked");
+                    int girlid = (int)item.item.Item - 42069012;
+                    for (int j = 0; j < player.girls.Count; j++)
+                    {
+                        if (player.girls[j].GetGirlDefinition().id == girlid)
+                        {
+                            player.girls[j].metStatus = GirlMetStatus.MET;
+                            item.processed++;
+                            break;
+                        }
+                    }
+                }
+                else if (item.item.Item > 42069024 && item.item.Item < 42069097)
+                {
+                    //GIFT ITEMS
+                    ArchipelagoConsole.LogMessage("gift item recieved");
+                    if (!player.IsInventoryFull())
+                    {
+                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item - 42069025 + 49), player.inventory, false, false);
+                        item.processed++;
+                    }
+                }
+                else if (item.item.Item > 42069096 && item.item.Item < 42069169)
+                {
+                    //UNIQUE GIFT ITEMS
+                    ArchipelagoConsole.LogMessage("unique gift item recieved");
+                    if (!player.IsInventoryFull())
+                    {
+                        player.AddItem(GameManager.Data.Items.Get((int)item.item.Item - 42069097 + 193), player.inventory, false, false);
+                        item.processed++;
+                    }
+                }
+                else if (item.item.Item > 42069168 && item.item.Item < 42069217)
+                {
+                    //TOKEN ITEMS
+                    ArchipelagoConsole.LogMessage("token recieved");
+                    if (item.item.Item < 42069175)
+                    {
+                        //TALENT
+                        player.UpgradeTraitLevel(PlayerTraitType.TALENT);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069181)
+                    {
+                        //FLIRTATION
+                        player.UpgradeTraitLevel(PlayerTraitType.FLIRTATION);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069187)
+                    {
+                        //ROMANCE
+                        player.UpgradeTraitLevel(PlayerTraitType.ROMANCE);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069193)
+                    {
+                        //SEXUALITY
+                        player.UpgradeTraitLevel(PlayerTraitType.SEXUALITY);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069199)
+                    {
+                        //PASSION
+                        player.UpgradeTraitLevel(PlayerTraitType.PASSION);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069205)
+                    {
+                        //SENSITIVITY
+                        player.UpgradeTraitLevel(PlayerTraitType.SENSITIVITY);
+                        item.processed++;
+                    }
+                    else if (item.item.Item < 42069211)
+                    {
+                        //CHRISMA
+                        player.UpgradeTraitLevel(PlayerTraitType.CHARISMA);
+                        item.processed++;
+                    }
+                    else
+                    {
+                        //LUCK
+                        player.UpgradeTraitLevel(PlayerTraitType.LUCK);
+                        item.processed++;
+                    }
+
+                }
+
+                if (item.processed == item.recieved) { item.priority = true; }
+
+            }            
         }
     }
 }

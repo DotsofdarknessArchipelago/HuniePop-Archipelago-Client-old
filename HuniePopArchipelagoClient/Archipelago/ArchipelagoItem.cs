@@ -12,8 +12,9 @@ namespace HuniePopArchipelagoClient.Archipelago
     public class ArchipelagoItem
     {
         public NetworkItem item;
-        public int recieved;
-        public int processed;
+        public int recieved = 0;
+        public int processed = 0;
+        public bool priority = true;
 
     }
 
