@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net35</TargetFramework>
-        <AssemblyName>BepInEx5ArchipelagoPluginTemplate</AssemblyName>
-        <Description>Archipelago Client Plugin for Hunie Pop</Description>
+		<AssemblyName>HunniePopArchipelagoClient</AssemblyName>
+		<Description>Archipelago Plugin For Hunnie Pop</Description>
         <Version>0.1.0</Version>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
