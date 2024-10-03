@@ -12,7 +12,7 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates
     {
         public const string PluginGUID = "com.dots.hunniepop";
         public const string PluginName = "HunniePopArchielago";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "0.1.1";
 
         public const string ModDisplayInfo = $"{PluginName} v{PluginVersion}";
         private const string APDisplayInfo = $"Archipelago v{ArchipelagoClient.APVersion}";
@@ -80,9 +80,9 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates
                 pass = GUI.TextField(new Rect(Screen.width - 150, 80, 140, 20), pass, 100);
 
                 // requires that the player at least puts *something* in the slot name
-                if (GUI.Button(new Rect(Screen.width - 200, 105, 100, 20), "Connect") && !ArchipelagoClient.ServerData.SlotName.IsNullOrWhiteSpace())
+                if (GUI.Button(new Rect(Screen.width - 200, 105, 100, 20), "Connect") && !name.IsNullOrWhiteSpace())
                 {
-                    ArchipelagoClient.ServerData.Uri = uri;
+                    ArchipelagoClient.ServerData.Uri = uri.Trim();
                     ArchipelagoClient.ServerData.SlotName = name;
                     ArchipelagoClient.ServerData.Password = pass;
                     ArchipelagoClient.Connect();

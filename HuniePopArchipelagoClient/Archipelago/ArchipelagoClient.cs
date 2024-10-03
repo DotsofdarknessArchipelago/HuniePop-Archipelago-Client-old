@@ -47,6 +47,7 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
             }
             catch (Exception e)
             {
+                ArchipelagoConsole.LogMessage(e.Message);
                 Plugin.BepinLogger.LogError(e);
             }
 
@@ -76,16 +77,17 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
                     _ => HandleConnectResult(
                         session.TryConnectAndLogin(
                             Game,
-                            ServerData.SlotName,
+                            ServerData.SlotName.Trim(),
                             ItemsHandlingFlags.AllItems, // TODO make sure to change this line
                             new Version(APVersion),
-                            password: ServerData.Password,
+                            password: ServerData.Password.Trim(),
                             requestSlotData: true // ServerData.NeedSlotData
                         )));
             }
             catch (Exception e)
             {
                 Plugin.BepinLogger.LogError(e);
+                ArchipelagoConsole.LogMessage(e.Message);
                 HandleConnectResult(new LoginFailure(e.ToString()));
                 attemptingConnection = false;
             }
@@ -150,11 +152,14 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
             ArchipelagoConsole.LogMessage(outText);
             attemptingConnection = false;
 
-            alist.reset();
-
-            foreach (NetworkItem item in session.Items.AllItemsReceived)
+            if (Authenticated)
             {
-                alist.add(item);
+                alist.reset();
+
+                foreach (NetworkItem item in session.Items.AllItemsReceived)
+                {
+                    alist.add(item);
+                }
             }
 
         }
@@ -237,6 +242,7 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
         private void OnSessionSocketClosed(string reason)
         {
             Plugin.BepinLogger.LogError($"Connection to Archipelago lost: {reason}");
+            ArchipelagoConsole.LogMessage($"Connection to Archipelago lost: {reason}");
             Disconnect();
         }
     }
