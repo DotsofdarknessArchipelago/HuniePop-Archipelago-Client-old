@@ -181,21 +181,14 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
 
         private bool CompareItems(ArchipelageItemList Itemlist1, NetworkItem Item2)
         {
-            using (StreamReader file = File.OpenText(Application.persistentDataPath + "/archdata"))
+            for (int i = 0; i < Itemlist1.list.Count; i++)
             {
-                JsonSerializer serializer = new JsonSerializer();
-                ArchipelageItemList savedlist = (ArchipelageItemList)serializer.Deserialize(file, typeof(ArchipelageItemList));
-                for (int i = 0; i < Itemlist1.list.Count; i++)
-                {
-                    if (Itemlist1.list[i].item.Equals(Item2) || Itemlist1.list[i].item.Equals(savedlist.list[i]))
-                        return true;
-                }
-                return false;
+                if(Itemlist1.list[i].item.Equals(Item2))
+                    return true;
             }
-
-
-
-        }
+            return false;    
+           
+           }
 
         /// <summary>
         /// we received an item so reward it here
