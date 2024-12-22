@@ -183,7 +183,7 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
         {
             for (int i = 0; i < Itemlist1.list.Count; i++)
             {
-                if(Itemlist1.list[i].item.Equals(Item2))
+                if(Itemlist1.list[i].item.Equals(Item2) )
                     return true;
             }
             return false;    
