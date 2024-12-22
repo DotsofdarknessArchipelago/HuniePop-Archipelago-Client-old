@@ -14,9 +14,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
-
 namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
 {
+
     public class ArchipelagoClient
     {
         public const string APVersion = "0.5.0";
@@ -30,7 +30,6 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
 
         public static Queue<long> itemstoprocess = new Queue<long>();
         public static ArchipelageItemList alist = new ArchipelageItemList();
-
 
         /// <summary>
         /// call to connect to an Archipelago session. Connection info should already be set up on ServerData
@@ -180,6 +179,17 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
             session.Socket.SendPacketAsync(new SayPacket { Text = message });
         }
 
+        private bool CompareItems(ArchipelageItemList Itemlist1, NetworkItem Item2)
+        {
+            for (int i = 0; i < Itemlist1.list.Count; i++)
+            {
+                if(Itemlist1.list[i].item.Equals(Item2))
+                    return true;
+            }
+            return false;    
+           
+           }
+
         /// <summary>
         /// we received an item so reward it here
         /// </summary>
@@ -187,12 +197,12 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
         private void OnItemReceived(ReceivedItemsHelper helper)
         {
             var receivedItem = helper.DequeueItem();
-            alist.add(receivedItem);
-
-            ArchipelagoConsole.LogMessage("ITEM RECIEVED: " + session.Items.GetItemName(receivedItem.Item));
-            if (helper.Index < ServerData.Index) return;
-
-            ServerData.Index++;
+            if (CompareItems(alist, receivedItem))
+              { alist.add(receivedItem);
+                ArchipelagoConsole.LogMessage("ITEM RECIEVED: " + session.Items.GetItemName(receivedItem.Item));
+                if (helper.Index < ServerData.Index) return;
+            }
+            ServerData.Index++;  
         
         }
 
