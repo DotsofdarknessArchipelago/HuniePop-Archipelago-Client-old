@@ -188,9 +188,9 @@ namespace BepInEx5ArchipelagoPluginTemplate.templates.Archipelago
                 for (int i = 0; i < Itemlist1.list.Count; i++)
                 {
                     if (Itemlist1.list[i].item.Equals(Item2) || Itemlist1.list[i].item.Equals(savedlist.list[i]))
-                        return false;
+                        return true;
                 }
-                return true;
+                return false;
             }
 
 
